@@ -1,0 +1,3 @@
+Add String and Floating Type Variables functionality accross board
+Add Include/Import command
+Add Built in Functions such as a basic math library etc
