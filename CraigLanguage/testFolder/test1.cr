@@ -6,6 +6,18 @@ sum = sum + x;
 sum = sum % 10;
 Print("Hello World");
 
+if("Hello" == "Hello");
+	Print("Hello == Hello");
+endif;
+
+if(1.5 - 0.5 == 1.0);
+	Print("Floating Point Works");
+endif;
+
+var test = 1.5;
+
+Print(test);
+
 function testFunction();
 	Print("This is a function");
 endfunc;

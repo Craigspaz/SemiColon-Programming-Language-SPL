@@ -27,4 +27,9 @@ public class Util
 		}
 		return true;
 	}
+	
+	public static boolean isFloatingPoint(String str)
+	{
+		return isNumeric(str) && str.contains(".");
+	}
 }

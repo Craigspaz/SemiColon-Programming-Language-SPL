@@ -1,0 +1,12 @@
+/Function.class
+/IfStack.class
+/IfStackItem.class
+/Interpreter.class
+/LoopStack.class
+/LoopStackItem.class
+/Memory.class
+/ProgramStack.class
+/ProgramStackFrame.class
+/RegisterKeys.class
+/Util.class
+/Variable.class

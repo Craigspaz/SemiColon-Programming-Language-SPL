@@ -80,14 +80,27 @@ public class Interpreter
 		{
 			String[] parts = toProcess.split("\\*");
 			int product = 1;
+			float fproduct = 1.0f;
+			boolean isFProd = false;
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if (Util.isNumeric(r))
+				if(Util.isFloatingPoint(r))
+				{
+					float v = Float.parseFloat(r);
+					fproduct *= v;
+					isFProd = true;
+				}
+				else if (Util.isNumeric(r))
 				{
 					int v = Integer.parseInt(r);
 					product *= v;
 				}
+			}
+			
+			if(isFProd)
+			{
+				return Float.toString(fproduct);
 			}
 			return Integer.toString(product);
 		}
@@ -95,11 +108,27 @@ public class Interpreter
 		{
 			String[] parts = toProcess.split("\\%");
 			int mod = 1;
+			float fmod = 1.0f;
+			boolean isFMod = false;
 			boolean firstNum = true;
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if (Util.isNumeric(r))
+				if(Util.isFloatingPoint(r))
+				{
+					float v = Float.parseFloat(r);
+					if(firstNum)
+					{
+						fmod = v;
+						firstNum = false;
+					}
+					else
+					{
+						fmod *= v;
+					}
+					isFMod = true;
+				}
+				else if (Util.isNumeric(r))
 				{
 					int v = Integer.parseInt(r);
 					if (firstNum)
@@ -113,17 +142,37 @@ public class Interpreter
 					}
 				}
 			}
+			if(isFMod)
+			{
+				return Float.toString(fmod);
+			}
 			return Integer.toString(mod);
 		}
 		else if (toProcess.contains("/"))
 		{
 			String[] parts = toProcess.split("\\/");
 			int quotient = 1;
+			float fquotient = 1.0f;
+			boolean isFQuot = false;
 			boolean firstNum = true;
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if (Util.isNumeric(r))
+				if(Util.isFloatingPoint(r))
+				{
+					float v = Float.parseFloat(r);
+					if(firstNum)
+					{
+						fquotient = v;
+						firstNum = false;
+					}
+					else
+					{
+						fquotient /= v;
+					}
+					isFQuot = true;
+				}
+				else if (Util.isNumeric(r))
 				{
 					int v = Integer.parseInt(r);
 					if (firstNum)
@@ -137,20 +186,36 @@ public class Interpreter
 					}
 				}
 			}
+			if(isFQuot)
+			{
+				return Float.toString(fquotient);
+			}
 			return Integer.toString(quotient);
 		}
 		else if (toProcess.contains("+"))
 		{
 			String[] parts = toProcess.split("\\+");
 			int sum = 0;
+			float fsum = 0.0f;
+			boolean isFSum = false;
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if (Util.isNumeric(r))
+				if(Util.isFloatingPoint(r))
+				{
+					float v = Float.parseFloat(r);
+					fsum += v;
+					isFSum = true;
+				}
+				else if (Util.isNumeric(r))
 				{
 					int v = Integer.parseInt(r);
 					sum += v;
 				}
+			}
+			if(isFSum)
+			{
+				return Float.toString(fsum);
 			}
 			return Integer.toString(sum);
 		}
@@ -158,11 +223,27 @@ public class Interpreter
 		{
 			String[] parts = toProcess.split("\\-");
 			int difference = 0;
+			float fdifference = 0.0f;
+			boolean isFDiff = false;
 			boolean firstNum = true;
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if (Util.isNumeric(r))
+				if(Util.isFloatingPoint(r))
+				{
+					float v = Float.parseFloat(r);
+					if(firstNum)
+					{
+						fdifference = v;
+						firstNum = false;
+					}
+					else
+					{
+						fdifference -= v;
+					}
+					isFDiff = true;
+				}
+				else if (Util.isNumeric(r))
 				{
 					int v = Integer.parseInt(r);
 					if (firstNum)
@@ -175,6 +256,10 @@ public class Interpreter
 						difference -= v;
 					}
 				}
+			}
+			if(isFDiff)
+			{
+				return Float.toString(fdifference);
 			}
 			return Integer.toString(difference);
 		}
@@ -216,7 +301,7 @@ public class Interpreter
 	 * @param toProcess The String to process
 	 * @return Returns the value calculated
 	 */
-	private int calculate(String toProcess)
+	private String calculate(String toProcess)
 	{
 		String tmp = toProcess;
 		while (tmp.contains("("))
@@ -243,14 +328,14 @@ public class Interpreter
 			builder.append(tmp.substring(endIndex + 1));
 			tmp = builder.toString();
 		}
-
+		
 		if (Util.isNumeric(tmp))
 		{
-			return Integer.parseInt(tmp);
+			return tmp;
 		}
 		else
 		{
-			return Integer.parseInt(calculateValue(tmp));
+			return calculateValue(tmp);
 		}
 	}
 
@@ -270,8 +355,7 @@ public class Interpreter
 		}
 		else
 		{
-			int v = calculate(value);
-			value = Integer.toString(v);
+			value = calculate(value);
 		}
 		int nextAddress = memory.getNextFreeAddress();
 		if (memory.addVariable(value, nextAddress))
@@ -404,8 +488,8 @@ public class Interpreter
 
 			if (Util.isNumeric(first) && Util.isNumeric(second))
 			{
-				int f = Integer.parseInt(first);
-				int sec = Integer.parseInt(second);
+				float f = Float.parseFloat(first);
+				float sec = Float.parseFloat(second);
 				if (f >= sec)
 				{
 					isTrue = true;
@@ -435,8 +519,8 @@ public class Interpreter
 
 			if (Util.isNumeric(first) && Util.isNumeric(second))
 			{
-				int f = Integer.parseInt(first);
-				int sec = Integer.parseInt(second);
+				float f = Float.parseFloat(first);
+				float sec = Float.parseFloat(second);
 				if (f <= sec)
 				{
 					isTrue = true;
@@ -487,8 +571,8 @@ public class Interpreter
 
 			if (Util.isNumeric(first) && Util.isNumeric(second))
 			{
-				int f = Integer.parseInt(first);
-				int sec = Integer.parseInt(second);
+				float f = Float.parseFloat(first);
+				float sec = Float.parseFloat(second);
 				if (f > sec)
 				{
 					isTrue = true;
@@ -518,8 +602,8 @@ public class Interpreter
 
 			if (Util.isNumeric(first) && Util.isNumeric(second))
 			{
-				int f = Integer.parseInt(first);
-				int sec = Integer.parseInt(second);
+				float f = Float.parseFloat(first);
+				float sec = Float.parseFloat(second);
 				if (f < sec)
 				{
 					isTrue = true;
@@ -575,10 +659,18 @@ public class Interpreter
 		{
 			String[] splitAtPlus = value.split("\\*");
 			int product = 1;
+			float fproduct = 1.0f;
+			boolean usingFloat = false;
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if (Util.isNumeric(b))
+				if(Util.isFloatingPoint(b))
+				{
+					float toAdd = Float.parseFloat(b);
+					fproduct += toAdd;
+					usingFloat = true;
+				}
+				else if (Util.isNumeric(b))
 				{
 					int toAdd = Integer.parseInt(b);
 					product *= toAdd;
@@ -589,7 +681,12 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if (Util.isNumeric(toAddStr))
+						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						{
+							float toAdd = Float.parseFloat(b);
+							fproduct += toAdd;
+						}
+						else if (Util.isNumeric(toAddStr))
 						{
 							int toAdd = Integer.parseInt(toAddStr);
 							product *= toAdd;
@@ -606,17 +703,37 @@ public class Interpreter
 					}
 				}
 			}
+			if(usingFloat)
+			{
+				value = Float.toString(fproduct);
+			}
 			value = Integer.toString(product);
 		}
 		else if (value.contains("/"))
 		{
 			String[] splitAtPlus = value.split("\\/");
 			int quotient = 1;
+			float fquotient = 1.0f;
+			boolean usingFloat = false;
 			boolean firstNum = true;
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if (Util.isNumeric(b))
+				if(Util.isFloatingPoint(b))
+				{
+					float toAdd = Float.parseFloat(b);
+					if(firstNum)
+					{
+						fquotient = toAdd;
+						firstNum = false;
+					}
+					else
+					{
+						fquotient /= toAdd;
+					}
+					usingFloat = true;
+				}
+				else if (Util.isNumeric(b))
 				{
 					int toAdd = Integer.parseInt(b);
 					if (firstNum)
@@ -635,7 +752,20 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if (Util.isNumeric(toAddStr))
+						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						{
+							float toAdd = Float.parseFloat(toAddStr);
+							if(firstNum)
+							{
+								fquotient = toAdd;
+								firstNum = false;
+							}
+							else
+							{
+								fquotient /= toAdd;
+							}
+						}
+						else if (Util.isNumeric(toAddStr))
 						{
 							int toAdd = Integer.parseInt(toAddStr);
 							if (firstNum)
@@ -660,17 +790,40 @@ public class Interpreter
 					}
 				}
 			}
-			value = Integer.toString(quotient);
+			if(usingFloat)
+			{
+				value = Float.toString(fquotient);
+			}
+			else
+			{
+				value = Integer.toString(quotient);
+			}
 		}
 		else if (value.contains("%"))
 		{
 			String[] splitAtPlus = value.split("\\%");
 			int mod = 1;
+			float fmod = 1.0f;
+			boolean usingFloat = false;
 			boolean firstNum = true;
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if (Util.isNumeric(b))
+				if(Util.isFloatingPoint(b))
+				{
+					float toAdd = Integer.parseInt(b);
+					if (firstNum)
+					{
+						fmod = toAdd;
+						firstNum = false;
+					}
+					else
+					{
+						fmod %= toAdd;
+					}
+					usingFloat = true;
+				}
+				else if (Util.isNumeric(b))
 				{
 					int toAdd = Integer.parseInt(b);
 					if (firstNum)
@@ -689,7 +842,20 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if (Util.isNumeric(toAddStr))
+						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						{
+							float toAdd = Integer.parseInt(toAddStr);
+							if (firstNum)
+							{
+								fmod = toAdd;
+								firstNum = false;
+							}
+							else
+							{
+								fmod %= toAdd;
+							}
+						}
+						else if (Util.isNumeric(toAddStr))
 						{
 							int toAdd = Integer.parseInt(toAddStr);
 							if (firstNum)
@@ -714,16 +880,31 @@ public class Interpreter
 					}
 				}
 			}
-			value = Integer.toString(mod);
+			if(usingFloat)
+			{
+				value = Float.toString(fmod);
+			}
+			else
+			{
+				value = Integer.toString(mod);
+			}
 		}
 		else if (value.contains("+"))
 		{
 			String[] splitAtPlus = value.split("\\+");
 			int sum = 0;
+			float fsum = 0.0f;
+			boolean usingFloat = false;
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if (Util.isNumeric(b))
+				if(Util.isFloatingPoint(b))
+				{
+					float toAdd = Float.parseFloat(b);
+					fsum += toAdd;
+					usingFloat = true;
+				}
+				else if (Util.isNumeric(b))
 				{
 					int toAdd = Integer.parseInt(b);
 					sum += toAdd;
@@ -734,7 +915,13 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if (Util.isNumeric(toAddStr))
+						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						{
+							float toAdd = Float.parseFloat(toAddStr);
+							fsum += toAdd;
+							usingFloat = true;
+						}
+						else if (Util.isNumeric(toAddStr))
 						{
 							int toAdd = Integer.parseInt(toAddStr);
 							sum += toAdd;
@@ -751,17 +938,40 @@ public class Interpreter
 					}
 				}
 			}
-			value = Integer.toString(sum);
+			if(usingFloat)
+			{
+				value = Float.toString(fsum);
+			}
+			else
+			{
+				value = Integer.toString(sum);
+			}
 		}
 		else if (value.contains("-"))
 		{
 			String[] splitAtPlus = value.split("\\-");
 			int difference = 1;
+			float fdifference = 1.0f;
+			boolean usingFloat = true;
 			boolean firstNum = true;
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if (Util.isNumeric(b))
+				if(Util.isFloatingPoint(b))
+				{
+					float toAdd = Float.parseFloat(b);
+					if (firstNum)
+					{
+						fdifference = toAdd;
+						firstNum = false;
+					}
+					else
+					{
+						fdifference -= toAdd;
+					}
+					usingFloat = true;
+				}
+				else if (Util.isNumeric(b))
 				{
 					int toAdd = Integer.parseInt(b);
 					if (firstNum)
@@ -780,7 +990,21 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if (Util.isNumeric(toAddStr))
+						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						{
+							float toAdd = Float.parseFloat(toAddStr);
+							if (firstNum)
+							{
+								fdifference = toAdd;
+								firstNum = false;
+							}
+							else
+							{
+								fdifference -= toAdd;
+							}
+							usingFloat = true;
+						}
+						else if (Util.isNumeric(toAddStr))
 						{
 							int toAdd = Integer.parseInt(toAddStr);
 							if (firstNum)
@@ -805,7 +1029,14 @@ public class Interpreter
 					}
 				}
 			}
-			value = Integer.toString(difference);
+			if(usingFloat)
+			{
+				value = Float.toString(fdifference);
+			}
+			else
+			{
+				value = Integer.toString(difference);
+			}
 		}
 
 		Variable findVar = stack.peek().getVariableByName(name);
