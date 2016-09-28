@@ -275,25 +275,20 @@ public class Interpreter
 				if (findVar != null)
 				{
 					String value = memory.getAtAddress(findVar.getAddress());
-					if (Util.isNumeric(value))
-					{
-						return value;
-					}
-					else
-					{
-						// HANDLE ERROR
-						System.out.println("ERROR: Variable is not storing a numeric value");
-					}
+					return value;
 				}
 				else
 				{
-					// HANDLE ERROR
-					System.out.println("ERROR: Variable with the name: " + toProcess + " does not exist");
+					//The String to be processed must be a string
+					if(!toProcess.contains("\""))
+					{
+						System.out.println("Error: Unknown Value!");
+					}
 				}
 			}
 		}
 
-		return "";
+		return toProcess;
 	}
 
 	/**
@@ -1194,10 +1189,10 @@ public class Interpreter
 			// TEMP
 			else if (trimmed.startsWith("Print("))
 			{
-				String param = trimmed.substring(6, trimmed.indexOf(")"));
+				String param = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")"));
 				if (param.contains("\""))
 				{
-					param = param.substring(1, param.length() - 1);
+					param = param.substring(param.indexOf("\"") + 1, param.indexOf("\"",param.indexOf("\"") + 1));
 					System.out.println(param);
 				}
 				else
@@ -1289,8 +1284,8 @@ public class Interpreter
 				}
 				else if (trimmed.startsWith("function "))
 				{
-					String name = trimmed.substring(9,trimmed.indexOf("("));
-					String parm = trimmed.substring(trimmed.indexOf("(") + 1,trimmed.indexOf(")"));
+					String name = trimmed.substring(trimmed.indexOf(" ") + 1,trimmed.indexOf("(")).trim();
+					String parm = trimmed.substring(trimmed.indexOf("(") + 1,trimmed.indexOf(")")).trim();
 					String[] parameters = parm.split("\\,");
 					declareFunc = new Function(name,parameters);
 					declaringFunction = true;
