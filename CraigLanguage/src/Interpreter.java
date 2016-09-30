@@ -10,7 +10,7 @@ public class Interpreter
 	public static void main(String[] args)
 	{
 		// TEST CODE
-		new Interpreter("./testFolder/test1.cr");
+		new Interpreter("./testFolder/test.cr");
 	}
 
 	private ProgramStack stack;
@@ -19,13 +19,14 @@ public class Interpreter
 	private IfStack ifStack;
 	private ArrayList<Function> declaredFunctions;
 	private Function declareFunc;
-	
-	
+
 	private String previousCodeExecuted = "";
 
 	/**
 	 * Creates a new Interpreter that interprets a file
-	 * @param filename The file to interpret
+	 * 
+	 * @param filename
+	 *            The file to interpret
 	 */
 	public Interpreter(String filename)
 	{
@@ -38,7 +39,7 @@ public class Interpreter
 		ifStack = new IfStack();
 		declaredFunctions = new ArrayList<Function>();
 
-		/** READS CODE FROM FILE AND EXECUTES IT**/
+		/** READS CODE FROM FILE AND EXECUTES IT **/
 		try
 		{
 			Scanner scanner = new Scanner(new File(filename));
@@ -61,8 +62,11 @@ public class Interpreter
 
 	/**
 	 * Creates a new Interpreter that interprets a String of code
-	 * @param code The code to interpret
-	 * @param loop Is True if in a loop and False if not in a loop
+	 * 
+	 * @param code
+	 *            The code to interpret
+	 * @param loop
+	 *            Is True if in a loop and False if not in a loop
 	 */
 	public Interpreter(String code, boolean loop)
 	{
@@ -71,12 +75,27 @@ public class Interpreter
 
 	/**
 	 * Calculates the value of arithmetic operations : Helper method
-	 * @param toProcess The String of arithmetic operations to evaluate
+	 * 
+	 * @param toProcess
+	 *            The String of arithmetic operations to evaluate
 	 * @return Returns a String representation of the result
 	 */
 	private String calculateValue(String toProcess)
 	{
-		if (toProcess.contains("*"))
+
+		if (toProcess.contains("~"))
+		{
+			String variable = toProcess.split("\\~")[1].trim();
+			Variable findVar = stack.peek().getVariableByName(variable);
+			return memory.getAtAddress(Integer.parseInt(memory.getAtAddress(findVar.getAddress())));
+		}
+		else if (toProcess.contains("@"))
+		{
+			String variable = toProcess.split("\\@")[1].trim();
+			Variable findVar = stack.peek().getVariableByName(variable);
+			return Integer.toString(findVar.getAddress());
+		}
+		else if (toProcess.contains("*"))
 		{
 			String[] parts = toProcess.split("\\*");
 			int product = 1;
@@ -85,7 +104,7 @@ public class Interpreter
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if(Util.isFloatingPoint(r))
+				if (Util.isFloatingPoint(r))
 				{
 					float v = Float.parseFloat(r);
 					fproduct *= v;
@@ -97,8 +116,8 @@ public class Interpreter
 					product *= v;
 				}
 			}
-			
-			if(isFProd)
+
+			if (isFProd)
 			{
 				return Float.toString(fproduct);
 			}
@@ -114,10 +133,10 @@ public class Interpreter
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if(Util.isFloatingPoint(r))
+				if (Util.isFloatingPoint(r))
 				{
 					float v = Float.parseFloat(r);
-					if(firstNum)
+					if (firstNum)
 					{
 						fmod = v;
 						firstNum = false;
@@ -142,7 +161,7 @@ public class Interpreter
 					}
 				}
 			}
-			if(isFMod)
+			if (isFMod)
 			{
 				return Float.toString(fmod);
 			}
@@ -158,10 +177,10 @@ public class Interpreter
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if(Util.isFloatingPoint(r))
+				if (Util.isFloatingPoint(r))
 				{
 					float v = Float.parseFloat(r);
-					if(firstNum)
+					if (firstNum)
 					{
 						fquotient = v;
 						firstNum = false;
@@ -186,7 +205,7 @@ public class Interpreter
 					}
 				}
 			}
-			if(isFQuot)
+			if (isFQuot)
 			{
 				return Float.toString(fquotient);
 			}
@@ -201,7 +220,7 @@ public class Interpreter
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if(Util.isFloatingPoint(r))
+				if (Util.isFloatingPoint(r))
 				{
 					float v = Float.parseFloat(r);
 					fsum += v;
@@ -213,7 +232,7 @@ public class Interpreter
 					sum += v;
 				}
 			}
-			if(isFSum)
+			if (isFSum)
 			{
 				return Float.toString(fsum);
 			}
@@ -229,10 +248,10 @@ public class Interpreter
 			for (String p : parts)
 			{
 				String r = calculateValue(p.trim());
-				if(Util.isFloatingPoint(r))
+				if (Util.isFloatingPoint(r))
 				{
 					float v = Float.parseFloat(r);
-					if(firstNum)
+					if (firstNum)
 					{
 						fdifference = v;
 						firstNum = false;
@@ -257,7 +276,7 @@ public class Interpreter
 					}
 				}
 			}
-			if(isFDiff)
+			if (isFDiff)
 			{
 				return Float.toString(fdifference);
 			}
@@ -279,8 +298,8 @@ public class Interpreter
 				}
 				else
 				{
-					//The String to be processed must be a string
-					if(!toProcess.contains("\""))
+					// The String to be processed must be a string
+					if (!toProcess.contains("\""))
 					{
 						System.out.println("Error: Unknown Value!");
 					}
@@ -293,7 +312,9 @@ public class Interpreter
 
 	/**
 	 * Handles order of operations for arithmetic operations
-	 * @param toProcess The String to process
+	 * 
+	 * @param toProcess
+	 *            The String to process
 	 * @return Returns the value calculated
 	 */
 	private String calculate(String toProcess)
@@ -323,7 +344,7 @@ public class Interpreter
 			builder.append(tmp.substring(endIndex + 1));
 			tmp = builder.toString();
 		}
-		
+
 		if (Util.isNumeric(tmp))
 		{
 			return tmp;
@@ -336,7 +357,9 @@ public class Interpreter
 
 	/**
 	 * Creates a new variable
-	 * @param line The line the variable is created on
+	 * 
+	 * @param line
+	 *            The line the variable is created on
 	 */
 	private void parseVariableCreationLine(String line)
 	{
@@ -371,22 +394,25 @@ public class Interpreter
 
 	/**
 	 * Evaluates boolean statements
-	 * @param condition The boolean expression to evaluate
-	 * @return Returns true if the expression is true or false if the expression is false
+	 * 
+	 * @param condition
+	 *            The boolean expression to evaluate
+	 * @return Returns true if the expression is true or false if the expression
+	 *         is false
 	 */
 	public boolean checkCondition(String condition)
 	{
 		boolean isTrue = false;
 		condition = condition.trim();
-		
-		if(condition.contains("("))
+
+		if (condition.contains("("))
 		{
 			String tmp = condition;
-			if(tmp.startsWith("if"))
+			if (tmp.startsWith("if"))
 			{
 				tmp = tmp.substring(2);
 			}
-			else if(tmp.startsWith("else if"))
+			else if (tmp.startsWith("else if"))
 			{
 				tmp = tmp.substring(7);
 			}
@@ -416,15 +442,15 @@ public class Interpreter
 			}
 			return checkCondition(tmp);
 		}
-		else if(condition.equals("true"))
+		else if (condition.equals("true"))
 		{
 			return true;
 		}
-		else if(condition.equals("false"))
+		else if (condition.equals("false"))
 		{
 			return false;
 		}
-		else if(condition.contains("&&"))
+		else if (condition.contains("&&"))
 		{
 			String[] parts = condition.split("\\&&");
 			String first = parts[0].trim();
@@ -436,7 +462,7 @@ public class Interpreter
 			}
 			boolean f = checkCondition(first);
 			boolean s = checkCondition(second);
-			if(f && s)
+			if (f && s)
 			{
 				return true;
 			}
@@ -444,9 +470,9 @@ public class Interpreter
 			{
 				return false;
 			}
-			
+
 		}
-		else if(condition.contains("||"))
+		else if (condition.contains("||"))
 		{
 			String[] parts = condition.split(Pattern.quote("||"));
 			String first = parts[0].trim();
@@ -458,7 +484,7 @@ public class Interpreter
 			}
 			boolean f = checkCondition(first);
 			boolean s = checkCondition(second);
-			if(f || s)
+			if (f || s)
 			{
 				return true;
 			}
@@ -466,7 +492,7 @@ public class Interpreter
 			{
 				return false;
 			}
-			
+
 		}
 		else if (condition.contains(">="))
 		{
@@ -638,19 +664,34 @@ public class Interpreter
 
 	/**
 	 * Sets a variable equal to a value
-	 * @param trimmed The String form of the value to calculate
+	 * 
+	 * @param trimmed
+	 *            The String form of the value to calculate
 	 */
 	public void handleEquals(String trimmed)
 	{
 		trimmed = trimmed.trim();
-		if(!trimmed.contains("=") || trimmed.equals(""))
+		if (!trimmed.contains("=") || trimmed.equals(""))
 		{
 			return;
 		}
 		// Setting Variable to something
 		String name = trimmed.substring(0, trimmed.indexOf("=")).trim();
 		String value = trimmed.substring(trimmed.indexOf("=") + 1).trim();
-		if (value.contains("*"))
+
+		if (value.contains("~"))
+		{
+			String variable = value.split("\\~")[1].trim();
+			Variable findVar = stack.peek().getVariableByName(variable);
+			value = memory.getAtAddress(Integer.parseInt(memory.getAtAddress(findVar.getAddress())));
+		}
+		else if (value.contains("@")) // Address Of operator
+		{
+			String variable = value.split("\\@")[1].trim();
+			Variable findVar = stack.peek().getVariableByName(variable);
+			value = Integer.toString(findVar.getAddress());
+		}
+		else if (value.contains("*"))
 		{
 			String[] splitAtPlus = value.split("\\*");
 			int product = 1;
@@ -659,7 +700,7 @@ public class Interpreter
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if(Util.isFloatingPoint(b))
+				if (Util.isFloatingPoint(b))
 				{
 					float toAdd = Float.parseFloat(b);
 					fproduct += toAdd;
@@ -676,7 +717,7 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						if (Util.isFloatingPoint(toAddStr) && usingFloat)
 						{
 							float toAdd = Float.parseFloat(b);
 							fproduct += toAdd;
@@ -698,7 +739,7 @@ public class Interpreter
 					}
 				}
 			}
-			if(usingFloat)
+			if (usingFloat)
 			{
 				value = Float.toString(fproduct);
 			}
@@ -714,10 +755,10 @@ public class Interpreter
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if(Util.isFloatingPoint(b))
+				if (Util.isFloatingPoint(b))
 				{
 					float toAdd = Float.parseFloat(b);
-					if(firstNum)
+					if (firstNum)
 					{
 						fquotient = toAdd;
 						firstNum = false;
@@ -747,10 +788,10 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						if (Util.isFloatingPoint(toAddStr) && usingFloat)
 						{
 							float toAdd = Float.parseFloat(toAddStr);
-							if(firstNum)
+							if (firstNum)
 							{
 								fquotient = toAdd;
 								firstNum = false;
@@ -785,7 +826,7 @@ public class Interpreter
 					}
 				}
 			}
-			if(usingFloat)
+			if (usingFloat)
 			{
 				value = Float.toString(fquotient);
 			}
@@ -804,7 +845,7 @@ public class Interpreter
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if(Util.isFloatingPoint(b))
+				if (Util.isFloatingPoint(b))
 				{
 					float toAdd = Integer.parseInt(b);
 					if (firstNum)
@@ -837,7 +878,7 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						if (Util.isFloatingPoint(toAddStr) && usingFloat)
 						{
 							float toAdd = Integer.parseInt(toAddStr);
 							if (firstNum)
@@ -875,7 +916,7 @@ public class Interpreter
 					}
 				}
 			}
-			if(usingFloat)
+			if (usingFloat)
 			{
 				value = Float.toString(fmod);
 			}
@@ -893,7 +934,7 @@ public class Interpreter
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if(Util.isFloatingPoint(b))
+				if (Util.isFloatingPoint(b))
 				{
 					float toAdd = Float.parseFloat(b);
 					fsum += toAdd;
@@ -910,7 +951,7 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						if (Util.isFloatingPoint(toAddStr) && usingFloat)
 						{
 							float toAdd = Float.parseFloat(toAddStr);
 							fsum += toAdd;
@@ -933,7 +974,7 @@ public class Interpreter
 					}
 				}
 			}
-			if(usingFloat)
+			if (usingFloat)
 			{
 				value = Float.toString(fsum);
 			}
@@ -952,7 +993,7 @@ public class Interpreter
 			for (String a : splitAtPlus)
 			{
 				String b = a.trim();
-				if(Util.isFloatingPoint(b))
+				if (Util.isFloatingPoint(b))
 				{
 					float toAdd = Float.parseFloat(b);
 					if (firstNum)
@@ -985,7 +1026,7 @@ public class Interpreter
 					if (findVar != null)
 					{
 						String toAddStr = memory.getAtAddress(findVar.getAddress());
-						if(Util.isFloatingPoint(toAddStr) && usingFloat)
+						if (Util.isFloatingPoint(toAddStr) && usingFloat)
 						{
 							float toAdd = Float.parseFloat(toAddStr);
 							if (firstNum)
@@ -1024,7 +1065,7 @@ public class Interpreter
 					}
 				}
 			}
-			if(usingFloat)
+			if (usingFloat)
 			{
 				value = Float.toString(fdifference);
 			}
@@ -1034,28 +1075,41 @@ public class Interpreter
 			}
 		}
 
-		Variable findVar = stack.peek().getVariableByName(name);
-		memory.setValueAtAddress(findVar.getAddress(), value);
+		
+		if (name.contains("~"))
+		{
+			int address = stack.peek().getVariableByName(name.split("\\~")[1]).getAddress();
+			int pointedToAddress = stack.peek().getVariableByAddress(Integer.parseInt(memory.getAtAddress(address))).getAddress();
+			memory.setValueAtAddress(pointedToAddress, value);
+		}
+		else
+		{
+			Variable findVar = stack.peek().getVariableByName(name);
+			memory.setValueAtAddress(findVar.getAddress(), value);
+		}
 	}
 
 	/**
 	 * Parses the inputed code
-	 * @param code The code to parse
-	 * @param loop Is true if in a loop and false if not in a loop
+	 * 
+	 * @param code
+	 *            The code to parse
+	 * @param loop
+	 *            Is true if in a loop and false if not in a loop
 	 */
 	public void execute(String code, boolean loop)
 	{
 		String[] splitAtSemi = code.split(";");
-		//boolean inIfStatement = false;
+		// boolean inIfStatement = false;
 		boolean skipIf = false;
 		boolean skipToEndOfIf = false;
 		boolean skipToEndOfCurrentLoop = false;
 		boolean declaringFunction = false;
 		for (String s : splitAtSemi)
 		{
-			if(declaringFunction)
+			if (declaringFunction)
 			{
-				if(s.equals("endfunc"))
+				if (s.equals("endfunc"))
 				{
 					declaringFunction = false;
 					declaredFunctions.add(declareFunc);
@@ -1064,9 +1118,9 @@ public class Interpreter
 				declareFunc.addCode(s + ";");
 				continue;
 			}
-			if(!previousCodeExecuted.equals(""))
+			if (!previousCodeExecuted.equals(""))
 			{
-				if(!loopStack.isEmpty())
+				if (!loopStack.isEmpty())
 				{
 					loopStack.peek().addCodeToExecute(previousCodeExecuted);
 				}
@@ -1115,11 +1169,10 @@ public class Interpreter
 			// END TMP IF STATEMENT CODE
 
 			// TMP LOOP CODE
-
 			if (trimmed.equals("endloop"))
 			{
 				skipToEndOfCurrentLoop = false;
-				if(loopStack.isEmpty())
+				if (loopStack.isEmpty())
 				{
 					continue;
 				}
@@ -1165,15 +1218,16 @@ public class Interpreter
 
 			// END TMP DO WHILE LOOP CODE
 
-			if (!ifStack.isEmpty() && !ifStack.peek().getCondition().equals("skippedIF") && (trimmed.startsWith("else if") || trimmed.equals("else")))
+			if (!ifStack.isEmpty() && !ifStack.peek().getCondition().equals("skippedIF")
+					&& (trimmed.startsWith("else if") || trimmed.equals("else")))
 			{
 				skipToEndOfIf = true;
-				//inIfStatement = false;
+				// inIfStatement = false;
 			}
 			else if (trimmed.equals("endif"))
 			{
 				skipToEndOfIf = false;
-				//inIfStatement = false;
+				// inIfStatement = false;
 				for (int i : ifStack.peek().getVarAddresses())
 				{
 					stack.peek().freeVariableAtAddress(i, memory);
@@ -1192,27 +1246,37 @@ public class Interpreter
 				String param = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")"));
 				if (param.contains("\""))
 				{
-					param = param.substring(param.indexOf("\"") + 1, param.indexOf("\"",param.indexOf("\"") + 1));
+					param = param.substring(param.indexOf("\"") + 1, param.indexOf("\"", param.indexOf("\"") + 1));
 					System.out.println(param);
 				}
 				else
 				{
-					Variable findVar = stack.peek().getVariableByName(param);
-					if (findVar != null)
+					if (param.contains("*") || param.contains("/") || param.contains("+") || param.contains("-")
+							|| param.contains("@") || param.contains("~"))
 					{
-						String value = memory.getAtAddress(findVar.getAddress());
+						String value = calculateValue(param);
 						System.out.println(value);
 					}
 					else
 					{
-						// HANDLE Error
-						System.out.println("ERROR CANNOT FIND VARIABLE");
+						Variable findVar = stack.peek().getVariableByName(param);
+						if (findVar != null)
+						{
+							String value = memory.getAtAddress(findVar.getAddress());
+							System.out.println(value);
+						}
+						else
+						{
+							// HANDLE Error
+							System.out.println("ERROR CANNOT FIND VARIABLE");
+						}
 					}
 				}
 			}
 			else
 			{
-				if ((trimmed.startsWith("if") && trimmed.split("\\(")[0].trim().equals("if")) || (trimmed.startsWith("else if") && trimmed.split("\\(")[0].trim().equals("else if")))
+				if ((trimmed.startsWith("if") && trimmed.split("\\(")[0].trim().equals("if"))
+						|| (trimmed.startsWith("else if") && trimmed.split("\\(")[0].trim().equals("else if")))
 				{
 					boolean isTrue = checkCondition(trimmed);
 
@@ -1220,7 +1284,7 @@ public class Interpreter
 					{
 						// System.out.println("DEBUG IF - TRUE");
 						ifStack.push(trimmed);
-						//inIfStatement = true;
+						// inIfStatement = true;
 					}
 					else
 					{
@@ -1233,14 +1297,14 @@ public class Interpreter
 				else if (trimmed.equals("else"))
 				{
 					ifStack.push("else");
-					//inIfStatement = true;
+					// inIfStatement = true;
 				}
 				else if ((trimmed.startsWith("for") && trimmed.split("\\(")[0].trim().equals("for")))
 				{
 					String paramString = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")"));
 					String[] paramSplit = paramString.split("\\,");
-					//if (!loop)
-					if(!stack.peek().contains(paramSplit[0].substring(4, paramSplit[0].indexOf("=")).trim()))
+					// if (!loop)
+					if (!stack.peek().contains(paramSplit[0].substring(4, paramSplit[0].indexOf("=")).trim()))
 					{
 						if (!paramSplit[0].isEmpty())
 						{
@@ -1261,14 +1325,10 @@ public class Interpreter
 						skipToEndOfCurrentLoop = true;
 					}
 				}
-				else if (trimmed.contains("="))
-				{
-					handleEquals(trimmed);
-				}
 				else if (trimmed.startsWith("while(") && trimmed.split("\\(")[0].trim().equals("while"))
 				{
 					String paramString = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")"));
-					
+
 					String condition = paramString.trim();
 					boolean isTrue = checkCondition(condition);
 
@@ -1282,43 +1342,48 @@ public class Interpreter
 						skipToEndOfCurrentLoop = true;
 					}
 				}
+				else if (trimmed.contains("="))
+				{
+					handleEquals(trimmed);
+				}
 				else if (trimmed.startsWith("function "))
 				{
-					String name = trimmed.substring(trimmed.indexOf(" ") + 1,trimmed.indexOf("(")).trim();
-					String parm = trimmed.substring(trimmed.indexOf("(") + 1,trimmed.indexOf(")")).trim();
+					String name = trimmed.substring(trimmed.indexOf(" ") + 1, trimmed.indexOf("(")).trim();
+					String parm = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")")).trim();
 					String[] parameters = parm.split("\\,");
-					declareFunc = new Function(name,parameters);
+					declareFunc = new Function(name, parameters);
 					declaringFunction = true;
 				}
 				else
 				{
 					boolean doneLoop = false;
-					for(Function f : declaredFunctions)
+					for (Function f : declaredFunctions)
 					{
-						String functionName = trimmed.substring(0,trimmed.indexOf("("));
-						String parm = trimmed.substring(trimmed.indexOf("(") + 1,trimmed.indexOf(")"));
-				        String[] parameters = parm.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+						String functionName = trimmed.substring(0, trimmed.indexOf("("));
+						String parm = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")"));
+						String[] parameters = parm.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
 
-						if(f.getFunctionName().equals(functionName.trim()) && parameters.length == f.getParameters().length)
+						if (f.getFunctionName().equals(functionName.trim())
+								&& parameters.length == f.getParameters().length)
 						{
 							RegisterKeys keys = new RegisterKeys(new ArrayList<Variable>());
 							stack.push(new ProgramStackFrame(keys));
-							
-							if(!parameters[0].equals("") || parameters.length != 1)
+
+							if (!parameters[0].equals("") || parameters.length != 1)
 							{
-								for(int i = 0; i < parameters.length;i++)
+								for (int i = 0; i < parameters.length; i++)
 								{
 									String nline = f.getParameters()[i] + " = " + parameters[i] + ";";
-									execute(nline,false);
+									execute(nline, false);
 								}
 							}
-							execute(f.getFunctionCode(),false);
+							execute(f.getFunctionCode(), false);
 							stack.pop();
 							doneLoop = true;
 							break;
 						}
 					}
-					if(doneLoop)
+					if (doneLoop)
 					{
 						continue;
 					}

@@ -33,6 +33,18 @@ public class ProgramStackFrame
 		return null;
 	}
 	
+	public Variable getVariableByAddress(int address)
+	{
+		for(Variable v : variables)
+		{
+			if(v.getAddress() == address)
+			{
+				return v;
+			}
+		}
+		return null;
+	}
+	
 	public void freeStackFrameMemory(Memory memory)
 	{
 		for(Variable i : variables)
