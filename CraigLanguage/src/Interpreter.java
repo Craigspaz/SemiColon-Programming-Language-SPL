@@ -1224,6 +1224,25 @@ public class Interpreter
 				skipToEndOfIf = true;
 				// inIfStatement = false;
 			}
+			else if(trimmed.startsWith("include "))
+			{
+				String filePath = trimmed.substring(trimmed.indexOf("\"") + 1, trimmed.indexOf("\"",trimmed.indexOf("\"") + 1));
+				StringBuilder includedCode = new StringBuilder();
+				try
+				{
+					Scanner scanner = new Scanner(new File(filePath));
+					while(scanner.hasNextLine())
+					{
+						includedCode.append(scanner.nextLine());
+					}
+					scanner.close();
+				}
+				catch (FileNotFoundException e)
+				{
+					e.printStackTrace();
+				}
+				execute(includedCode.toString(),false);
+			}
 			else if (trimmed.equals("endif"))
 			{
 				skipToEndOfIf = false;

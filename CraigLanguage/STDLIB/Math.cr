@@ -27,3 +27,32 @@ function pow(var result, var base, var power);
 	endloop;
 	~result = base;
 endfunc;
+
+function factorial(var result, var value);
+	var f = 1;
+	for(var i = 1; i < value; i += 1);
+		f *= i;
+	endloop;
+	~result = f;
+endfunc;
+
+function max(var result, var a, var b);
+	var r = 0;
+	if(a > b);
+		r = a;
+	else;
+		r = b;
+	endif;
+	~result = r;
+endfunc;
+
+function min(var result, var a, var b);
+	var r = 0;
+	if(a < b);
+		r = a;
+	else;
+		r = b;
+	endif;
+	~result = r;
+endfunc;
+
