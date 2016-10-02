@@ -2,8 +2,9 @@ var y = 20;
 var z = "dgksd fasd askdf asdfjksdf sdkf j";
 var q = 21;
 
-include "./testFolder/testInclude.cr";
-
+//The following line includes another file's code
+include "./testFolder/testInclude.cr"; //Includes testInclude.cr;
+//Test comment
 
 var x = @q;
 

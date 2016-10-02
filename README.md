@@ -62,6 +62,15 @@ The code below sets x to the value 5
 	~y = 5;
 ```
 
+## Example Comment
+```
+//This is a comment. A semicolon is not required at the end of this comment because it is on it's own line
+//Any line that starts with "//" is ignored
+var x = 5; //This is also a comment but notice the semicolon at the end of this comment;
+
+//The following line prints out the value of x
+Print(x);
+```
 ## Include Example
 Content of testInclude.cr
 ```

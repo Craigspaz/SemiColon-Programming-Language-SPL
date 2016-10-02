@@ -40,24 +40,37 @@ public class Interpreter
 		declaredFunctions = new ArrayList<Function>();
 
 		/** READS CODE FROM FILE AND EXECUTES IT **/
+
+		String code = readFile(filename);
+		if(code == null)
+		{
+			System.out.println("Error reading file!");
+		}
+		execute(code, false);
+	}
+	
+	private String readFile(String filename)
+	{
 		try
 		{
 			Scanner scanner = new Scanner(new File(filename));
 			StringBuilder builder = new StringBuilder();
-
-			while (scanner.hasNextLine())
+			while(scanner.hasNextLine())
 			{
-				builder.append(scanner.nextLine());
+				String line = scanner.nextLine();
+				if(!line.startsWith("//"))
+				{
+					builder.append(line);
+				}
 			}
 			scanner.close();
-			// COMMENTED OUT FOR TEST CODE
-			String code = builder.toString();
-			execute(code, false);
+			return builder.toString();
 		}
 		catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	/**
@@ -1127,6 +1140,10 @@ public class Interpreter
 				previousCodeExecuted = "";
 			}
 			String trimmed = s.trim();
+			if(trimmed.startsWith("//"))
+			{
+				continue;
+			}
 			if ((!trimmed.startsWith("for") && !loopStack.isEmpty()))
 			{
 				loopStack.peek().addCodeToExecute(trimmed + ";");
@@ -1227,21 +1244,8 @@ public class Interpreter
 			else if(trimmed.startsWith("include "))
 			{
 				String filePath = trimmed.substring(trimmed.indexOf("\"") + 1, trimmed.indexOf("\"",trimmed.indexOf("\"") + 1));
-				StringBuilder includedCode = new StringBuilder();
-				try
-				{
-					Scanner scanner = new Scanner(new File(filePath));
-					while(scanner.hasNextLine())
-					{
-						includedCode.append(scanner.nextLine());
-					}
-					scanner.close();
-				}
-				catch (FileNotFoundException e)
-				{
-					e.printStackTrace();
-				}
-				execute(includedCode.toString(),false);
+				String includeCode = readFile(filePath);
+				execute(includeCode,false);
 			}
 			else if (trimmed.equals("endif"))
 			{
