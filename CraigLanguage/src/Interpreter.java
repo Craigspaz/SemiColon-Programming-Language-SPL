@@ -49,6 +49,11 @@ public class Interpreter
 		execute(code, false);
 	}
 	
+	/**
+	 * Reads in a file and handles comments
+	 * @param filename The filename to parse
+	 * @return Returns a string with the code in the file
+	 */
 	private String readFile(String filename)
 	{
 		try
