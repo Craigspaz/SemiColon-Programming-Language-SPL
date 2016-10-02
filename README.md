@@ -61,3 +61,21 @@ The code below sets x to the value 5
 	var y = @x;
 	~y = 5;
 ```
+
+## Include Example
+Content of testInclude.cr
+```
+function doesNotExistAnywhere();
+	Print("This is a function");
+endfunc;
+```
+
+Content of test.cr
+```
+include "./testFolder/testInclude.cr";
+doesNotExistAnywhere();
+```
+If test.cr is executed the following is the result
+```
+This is a function
+```
