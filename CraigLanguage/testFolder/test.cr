@@ -7,6 +7,7 @@ include "./testFolder/testInclude.cr"; //Includes testInclude.cr;
 //Test comment
 
 var x = @q;
+var kd;
 
 Print(x);
 Print(~x);

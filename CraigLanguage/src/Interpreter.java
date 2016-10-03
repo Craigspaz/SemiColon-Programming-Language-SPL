@@ -381,8 +381,23 @@ public class Interpreter
 	 */
 	private void parseVariableCreationLine(String line)
 	{
-		String name = line.substring(4, line.indexOf("=")).trim();
-		String value = line.substring(line.indexOf("=") + 1).trim();
+		String name = null;
+		String value = null;
+		if(line.contains("="))
+		{
+			name = line.substring(4, line.indexOf("=")).trim();
+			value = line.substring(line.indexOf("=") + 1).trim();
+		}
+		
+		if(name == null)
+		{
+			return;
+		}
+		
+		if(value == null)
+		{
+			value = "0";
+		}
 
 		if (value.contains("\""))
 		{
