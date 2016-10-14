@@ -15,3 +15,17 @@ Print(~x);
 doesNotExistAnywhere();
 Print(x);
 Print(q);
+q = 27;
+Print("TEST");
+Print(q[1]);
+
+// Declare array
+var arr = {};
+var arrWithStuff = {5,3,2};
+Print(arrWithStuff[1]);
+arrWithStuff[1] = 8;
+Print(arrWithStuff[1]);
+append(arr,1);
+Print(arr[0]);
+append(arr,"Hello This is in an array");
+Print(arr[1]);

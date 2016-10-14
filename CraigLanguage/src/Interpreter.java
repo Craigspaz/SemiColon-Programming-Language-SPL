@@ -113,6 +113,22 @@ public class Interpreter
 			Variable findVar = stack.peek().getVariableByName(variable);
 			return Integer.toString(findVar.getAddress());
 		}
+		else if(toProcess.contains("[") && toProcess.contains("]"))
+		{
+			int index = Integer.parseInt(toProcess.substring(toProcess.indexOf("[") + 1, toProcess.indexOf("]")));
+			
+			String variable = toProcess.split("\\[")[0].trim();
+			String variableMem = memory.getAtAddress(stack.peek().getVariableByName(variable).getAddress());
+			if(variableMem.startsWith("{") && variableMem.endsWith("}"))
+			{
+				String[] array = variableMem.substring(1, variableMem.length() - 1).trim().split(",");
+				return array[index].trim();
+			}
+			else
+			{
+				return variableMem.charAt(index) + "";
+			}
+		}
 		else if (toProcess.contains("*"))
 		{
 			String[] parts = toProcess.split("\\*");
@@ -399,7 +415,11 @@ public class Interpreter
 			value = "0";
 		}
 
-		if (value.contains("\""))
+		if(value.startsWith("{") || value.endsWith("}"))
+		{
+			// DO Nothing
+		}
+		else if (value.contains("\""))
 		{
 			String v = value.substring(1, value.length() - 1);
 			value = v;
@@ -712,7 +732,41 @@ public class Interpreter
 		String name = trimmed.substring(0, trimmed.indexOf("=")).trim();
 		String value = trimmed.substring(trimmed.indexOf("=") + 1).trim();
 
-		if (value.contains("~"))
+		if(name.contains("[") && name.contains("]"))
+		{
+			String n = name.substring(0, name.indexOf("["));
+			String i = name.substring(name.indexOf("[") + 1,name.indexOf("]"));
+			int index = Integer.parseInt(i);
+			String m = memory.getAtAddress(stack.peek().getVariableByName(n).getAddress());
+			if(m.startsWith("{") && m.endsWith("}"))
+			{
+				String[] array = m.substring(1, m.length() - 1).split("\\,");
+				array[index] = value;
+				StringBuilder result = new StringBuilder();
+				result.append("{");
+				int counter = 0;
+				for(String a : array)
+				{
+					result.append(a);
+					if(counter + 1 != array.length)
+					{
+						result.append(",");
+					}
+					counter++;
+				}
+				result.append("}");
+				memory.setValueAtAddress(stack.peek().getVariableByName(n).getAddress(), result.toString());
+			}
+			else
+			{
+				StringBuilder result = new StringBuilder();
+				result.append(m.substring(0,index));
+				result.append(value);
+				result.append(m.substring(index + 1, m.length()));
+				memory.setValueAtAddress(stack.peek().getVariableByName(n).getAddress(), result.toString());
+			}
+		}
+		else if (value.contains("~"))
 		{
 			String variable = value.split("\\~")[1].trim();
 			Variable findVar = stack.peek().getVariableByName(variable);
@@ -1115,6 +1169,10 @@ public class Interpreter
 			int pointedToAddress = stack.peek().getVariableByAddress(Integer.parseInt(memory.getAtAddress(address))).getAddress();
 			memory.setValueAtAddress(pointedToAddress, value);
 		}
+		else if(name.contains("[") || name.contains("]"))
+		{
+			//DO nothing
+		}
 		else
 		{
 			Variable findVar = stack.peek().getVariableByName(name);
@@ -1284,7 +1342,7 @@ public class Interpreter
 				parseVariableCreationLine(trimmed);
 			}
 			// TEMP
-			else if (trimmed.startsWith("Print("))
+			else if (trimmed.startsWith("Print"))
 			{
 				String param = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")"));
 				if (param.contains("\""))
@@ -1302,7 +1360,7 @@ public class Interpreter
 					}
 					else
 					{
-						Variable findVar = stack.peek().getVariableByName(param);
+						/*Variable findVar = stack.peek().getVariableByName(param);
 						if (findVar != null)
 						{
 							String value = memory.getAtAddress(findVar.getAddress());
@@ -1312,8 +1370,38 @@ public class Interpreter
 						{
 							// HANDLE Error
 							System.out.println("ERROR CANNOT FIND VARIABLE");
-						}
+						}*/
+						System.out.println(calculateValue(param));
 					}
+				}
+			}
+			else if(trimmed.startsWith("append"))
+			{
+				String param = trimmed.substring(trimmed.indexOf("(") + 1, trimmed.indexOf(")"));
+				String arrayName = param.substring(0,param.indexOf(","));
+				String value = param.substring(param.indexOf(",") + 1, param.length());
+				String a = memory.getAtAddress(stack.peek().getVariableByName(arrayName).getAddress());
+				
+				if(a.startsWith("{") && a.endsWith("}"))
+				{
+					StringBuilder result = new StringBuilder();
+					if(a.length() == 2)
+					{
+						result.append("{" + value + "}");
+					}
+					else
+					{
+						result.append(a.substring(0, a.length() - 1));
+						result.append(",");
+						result.append(value);
+						result.append("}");
+					}
+					memory.setValueAtAddress(stack.peek().getVariableByName(arrayName).getAddress(), result.toString());
+				}
+				else
+				{
+					a += value;
+					memory.setValueAtAddress(stack.peek().getVariableByName(arrayName).getAddress(), a);
 				}
 			}
 			else

@@ -88,3 +88,17 @@ If test.cr is executed the following is the result
 ```
 This is a function
 ```
+
+## Arrays
+```
+	var x = {};
+	append(x,"Appends this string to x");
+```
+
+```
+	var y = {6, "Hello", 2, 338, 29};
+	var x = y[1];
+	y[1] = 3;
+	Print(x); // This prints out "Hello";
+	Print(y[1]); // This prints out 3;
+```
