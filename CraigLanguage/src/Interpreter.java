@@ -1381,7 +1381,11 @@ public class Interpreter
 				String arrayName = param.substring(0,param.indexOf(","));
 				String value = param.substring(param.indexOf(",") + 1, param.length());
 				String a = memory.getAtAddress(stack.peek().getVariableByName(arrayName).getAddress());
-				
+				value = calculateValue(value);
+				if(value.startsWith("\"") && value.endsWith("\""))
+				{
+					value = value.substring(1, value.length() - 1);
+				}
 				if(a.startsWith("{") && a.endsWith("}"))
 				{
 					StringBuilder result = new StringBuilder();

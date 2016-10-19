@@ -1,9 +1,0 @@
-Not Completed
-Add Pointers like in the C Programming Language
-Add Include/Import command
-Add Built in Functions such as a basic math library etc
-Identify the difference between a String and a variable name
-
-
-Completed
-Add String and Floating Type Variables functionality across board - DONE
