@@ -53,4 +53,27 @@ public class ProgramStack
 		}
 		return stack[pointer--];
 	}
+	
+	/**
+	 * Returns the stack frame at a specific index
+	 * @param i The index of the frame
+	 * @return Returns the stack frame at a specific index
+	 */
+	public ProgramStackFrame index(int i)
+	{
+		if(i < 0 || i > pointer)
+		{
+			throw new IndexOutOfBoundsException();
+		}
+		return stack[i];
+	}
+	
+	/**
+	 * Returns the current stack pointer
+	 * @return Returns the current stack pointer
+	 */
+	public int getPointer()
+	{
+		return pointer;
+	}
 }

@@ -10,7 +10,8 @@ public class Interpreter
 	public static void main(String[] args)
 	{
 		// TEST CODE
-		new Interpreter("./testFolder/test.cr");
+		//new Interpreter("./testFolder/test.cr");
+		new Interpreter("./testFolder/mathtest.cr");
 	}
 
 	private ProgramStack stack;
@@ -1166,8 +1167,7 @@ public class Interpreter
 		if (name.contains("~"))
 		{
 			int address = stack.peek().getVariableByName(name.split("\\~")[1]).getAddress();
-			int pointedToAddress = stack.peek().getVariableByAddress(Integer.parseInt(memory.getAtAddress(address))).getAddress();
-			memory.setValueAtAddress(pointedToAddress, value);
+			memory.setValueAtAddress(Integer.parseInt(memory.getAtAddress(address)),calculateValue(value));
 		}
 		else if(name.contains("[") || name.contains("]"))
 		{
@@ -1501,6 +1501,10 @@ public class Interpreter
 						if (f.getFunctionName().equals(functionName.trim())
 								&& parameters.length == f.getParameters().length)
 						{
+							for(int i = 0; i < parameters.length; i++)
+							{
+								parameters[i] = calculateValue(parameters[i]);
+							}
 							RegisterKeys keys = new RegisterKeys(new ArrayList<Variable>());
 							stack.push(new ProgramStackFrame(keys));
 

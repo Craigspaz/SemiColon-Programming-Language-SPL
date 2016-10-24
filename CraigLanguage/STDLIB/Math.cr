@@ -26,7 +26,7 @@ endfunc;
 function pow(var result, var base, var power);
 	var r = 1;
 	for(var i = 0; i < power; i = i + 1);
-		r *= base;
+		r = r * base;
 	endloop;
 	~result = base;
 endfunc;
@@ -35,7 +35,7 @@ endfunc;
 function factorial(var result, var value);
 	var f = 1;
 	for(var i = 1; i < value; i += 1);
-		f *= i;
+		f = f * i;
 	endloop;
 	~result = f;
 endfunc;
@@ -62,12 +62,49 @@ function min(var result, var a, var b);
 	~result = r;
 endfunc;
 
+// Calculates the length of an array
+function len(var result, var a);
+	if(a == "");
+		~result = 0;
+	else;
+		var counter = 0;
+		var t = a[0];
+		while(t != "");
+			counter = counter + 1;
+		endloop;
+		~result = counter;
+	endif;
+endfunc;
+
 // Calculates if a variable is storing a numeric value
 function isNumeric(var result, var value);
-	
+	var counter = 0;
+	var length = 0;
+	len(@length,value);
+	while(counter < length);
+		if(value[counter] != "0" && value[counter] != "1" && value[counter] != "2" && value[counter] != "3" && value[counter] != "4" && value[counter] != "5" && value[counter] != "6" && value[counter] != "7" && value[counter] != "8" && value[counter] != "9" && value[counter] != ".");
+			~result = 0;
+		endif;
+		counter = counter + 1;
+	endloop;
+	~result = 1;
 endfunc;
 
 // Calculates if a variable is storing a floating point number
 function isFloatingNumber(var result, var value);
-
+	var r = 0;
+	isNumeric(@r,value);
+	if(r == 0);
+		~result = 0;
+	else;
+		var counter = 0;
+		var length = 0;
+		len(@length,value);
+		while(counter < length);
+			if(value[counter] == ".");
+				~result = 1;
+			endif;
+			counter = counter + 1;
+		endloop;
+	endif;
 endfunc;
