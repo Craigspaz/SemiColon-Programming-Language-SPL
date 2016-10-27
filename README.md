@@ -1,4 +1,4 @@
-# CraigLanguage
+# Shitty Programming Language (SPL)
 
 Intended for serverside scripting for websites.
 
