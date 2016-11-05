@@ -1,4 +1,4 @@
-# Shitty Programming Language (SPL)
+# SemiColon Programming Language (SPL)
 
 Intended for serverside scripting for websites.
 
