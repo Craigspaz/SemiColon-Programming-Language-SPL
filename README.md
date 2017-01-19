@@ -1,5 +1,7 @@
 # SemiColon Programming Language (SPL)
 
+Compiler creation in progress https://github.com/Craigspaz/SPL-Compiler
+
 Intended for serverside scripting for websites.
 
 ## Hello World
